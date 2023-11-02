@@ -7,8 +7,21 @@ import * as yup from 'yup';
 const router = useRouter()
 
 const schema = yup.object({
-  email: yup.string().email().required(),
-  password: yup.string().min(6).required().max(10),
+  email: yup.string()
+    .email('Email phải đúng định dạng')
+    .required('Email không được bỏ trống')
+    .test((value, validator) => {
+        if (value.indexOf('example') >= 0) {
+            return validator.createError({message: 'Email không phải định dạng example'})
+        }
+
+        if (value.indexOf('@gmail.com') < 0) {
+            return validator.createError({message: 'Email bắt buộc phải định dạng @gmail.com'})
+        }
+
+        return true
+    }),
+  password: yup.string().min(6, 'Mật khẩu không được nhỏ hơn 6 ký tự').required('Password không được bỏ trống').max(10, 'Mật khẩu không được lớn hơn 10 ký tự'),
 });
 
 const { defineInputBinds, errors, handleSubmit } = useForm({
